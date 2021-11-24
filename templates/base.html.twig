@@ -38,6 +38,14 @@
   </div>
 </nav>
 <div class="container">
+{# read and display just one flash message type #}
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="flash-{{ label }} alert alert-{{ label }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
 {% block body %}{% endblock %}
 </div>
     </body>

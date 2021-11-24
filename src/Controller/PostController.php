@@ -11,8 +11,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/post", name="post.")
- * @param PostRepository $postRepository
- * @return Response
  */
 class PostController extends AbstractController
 {
@@ -34,21 +32,25 @@ class PostController extends AbstractController
     public function create(Request $request)
     {
         $post = new Post();
-        $post->setTitle('This is going to be a title!');
+        $title = "";
+        foreach (range(0, rand(5,10)) as $number) {
+            $title .= $this->generateRandomString(rand(5,10))." ";
+        }
+        $post->setTitle($title);
         $entityManager = $this->getDoctrine()->getManager();
 
         $entityManager->persist($post);
 
         $entityManager->flush();
 
-        return new Response('Saved new product with id '.$post->getId());
+        $this->addFlash('success', 'Post was created!'. $post->getId());
+
+        return $this->redirect($this->generateUrl('post.index'));
 
     }
 
     /**
      * @Route("/show/{id}", name="show")
-     * @param Post $post
-     * 
      */
     public function show(Post $post)
     {
@@ -56,5 +58,25 @@ class PostController extends AbstractController
             'post' => $post
         ]);
     }
-    
+
+    /**
+     * @Route("/delete/{id}", name="delete")
+     */
+    public function delete(Post $post)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $entityManager->remove($post);
+
+        $entityManager->flush();       
+        
+        $this->addFlash('success', 'Post was removed!'. $post->getId());
+
+        return $this->redirect($this->generateUrl('post.index'));
+    }
+
+    public function generateRandomString($length = 10) {
+        return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length/strlen($x)) )),1,$length);
+    }
+
 }
