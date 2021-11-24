@@ -11,25 +11,21 @@ class MainController extends AbstractController
 {
 /**
  * @Route("/main")
- * @Route("/")
+ * @Route("/", name="home")
  */
     public function index(): Response
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/MainController.php',
-        ]);
+        return $this->render('home/index.html.twig', ['name'=> 'index testi' ]);
     }
 /**
- * @Route("/test/{name?}")
+ * @Route("/test/{name?}", name="custom")
  * @param Request $request
  * @return Response
  */
     public function test(Request $request): Response
     {
-        dump($request->get('name'));
+        # dump($request->get('name'));
         $name = $request->get('name');
-
-        return new Response("<h1>Merbaha!</h1><h2>Merhaba $name</h2>");
+        return $this->render('home/custom.html.twig', ['name'=> $name ]);
     }
 }
