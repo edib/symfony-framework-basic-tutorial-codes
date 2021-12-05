@@ -1,5 +1,11 @@
 {% extends('base.html.twig') %}
 
 {% block body %}
-{{ post.id }} - {{ post.title }}
+<b>ID:</b> {{ post.id }}
+<br>
+<b>Title:</b> {{ post.title }}
+<br>
+<b>Link:</b> <a href="/uploads/{{ post.image }}">{{ post.image }}</a>
+<br>
+<b>Category:</b> {{ post.category}}
 {% endblock %}

@@ -9,6 +9,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 /**
  * @Route("/post", name="post.")
@@ -30,7 +32,7 @@ class PostController extends AbstractController
 /**
  * @Route("/create",name="create")
  */
-    public function create(Request $request)
+    public function create(Request $request, SluggerInterface $slugger)
     {
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
@@ -38,6 +40,17 @@ class PostController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
              $entityManager = $this->getDoctrine()->getManager();
+            $file = $form->get('image')->getData();
+            if ($file) {
+                $safeFilename = $slugger->slug($file->getClientOriginalName());
+                $filename = $safeFilename. "-".uniqid(). "." . $file->getClientOriginalExtension();
+                $file->move(
+                    $this->getParameter('upload_dir'),
+                    $filename
+                );
+                $post->setImage($filename);
+            }
+
              $entityManager->persist($post);
             $entityManager->flush();
             $this->addFlash('success', 'Post was created!'. $post->getId());
