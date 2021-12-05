@@ -29,6 +29,20 @@ class PostController extends AbstractController
         ]);
     }
 
+
+    /**
+     * @Route("/show/cat/{id}", name="show_cat")
+     */
+    public function show_cat($id, PostRepository $postRepository)
+    {
+        $posts = $postRepository->findPostByCategory($id);
+        //dump($posts);
+        return $this->render('post/index.html.twig', [
+            'posts' => $posts,
+        ]);
+    }
+
+
 /**
  * @Route("/create",name="create")
  */
